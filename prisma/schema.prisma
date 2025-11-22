@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
+  username       String    @unique
+  hashedPassword String
+  name           String?
+  bookings       Booking[]
+  phone          String?
+  role           Role      @default(USER)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Branch {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  location  String
+  rooms     Room[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Room {
+  id        Int       @id @default(autoincrement())
+  number    String
+  branchId  Int
+  type      String
+  price     Float
+  bookings  Booking[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id])
+
+  @@unique([branchId, number])
+}
+
+model Booking {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  roomId     Int
+  checkIn    DateTime
+  checkOut   DateTime
+  totalPrice Float
+  paymentId  Int      @unique
+  status     Status   @default(PENDING)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id])
+  room    Room     @relation(fields: [roomId], references: [id])
+  payment Payment?
+}
+
+model Payment {
+  id        Int           @id @default(autoincrement())
+  bookingId Int           @unique
+  amount    Float
+  status    PaymentStatus @default(PENDING)
+  method    String
+  createdAt DateTime      @default(now())
+
+  booking Booking @relation(fields: [bookingId], references: [id])
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Status {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}

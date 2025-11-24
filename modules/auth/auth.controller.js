@@ -4,7 +4,7 @@ import { registerSchema, loginSchema } from './auth.validation.js'
 const register = async (req, res, next) => {
     try {
         const zoddedData = registerSchema.parse(req.body)
-        const user = authService.register(zoddedData)
+        const user = await authService.register(zoddedData)
         res.status(201).json({
             user: {
                 email: user.email,

@@ -5,22 +5,35 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
+
+model RefreshToken {
+  id         Int      @id @default(autoincrement())
+  token      String   @unique
+  userId     Int
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+  revoked    Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id])
+}
+
 
 model User {
   id             Int       @id @default(autoincrement())
   email          String    @unique
   username       String    @unique
   hashedPassword String
-  name           String?
+  name           String
   bookings       Booking[]
   phone          String?
+  refreshTokens  RefreshToken[]
   role           Role      @default(USER)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
@@ -36,16 +49,18 @@ model Branch {
 }
 
 model Room {
-  id        Int       @id @default(autoincrement())
-  number    String
-  branchId  Int
-  type      String
-  price     Float
-  bookings  Booking[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id         Int       @id @default(autoincrement())
+  number     String
+  branchId   Int
+  type       String
+  capacity   Int
+  Roomstatus RoomStatus @default(AVAILABLE)
+  price      Float
+  bookings   Booking[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
-  branch Branch @relation(fields: [branchId], references: [id])
+  branch     Branch @relation(fields: [branchId], references: [id])
 
   @@unique([branchId, number])
 }
@@ -57,7 +72,6 @@ model Booking {
   checkIn    DateTime
   checkOut   DateTime
   totalPrice Float
-  paymentId  Int      @unique
   status     Status   @default(PENDING)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -93,4 +107,10 @@ enum Status {
   PENDING
   CONFIRMED
   CANCELLED
+}
+
+enum RoomStatus {
+  AVAILABLE
+  OCCUPIED
+  MAINTENANCE
 }

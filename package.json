@@ -12,12 +12,17 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "prisma": "^5.22.0",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "dotenv": "^17.2.3",
-    "nodemon": "^3.1.11",
-    "prisma": "^7.0.0"
+    "nodemon": "^3.1.11"
   }
 }

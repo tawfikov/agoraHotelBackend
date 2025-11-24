@@ -1,3 +1,5 @@
+import { ZodError } from 'zod'
+import { BadRequestError } from '../../utils/AppError.js'
 import authService from './auth.service.js'
 import { registerSchema, loginSchema } from './auth.validation.js'
 
@@ -5,16 +7,25 @@ const register = async (req, res, next) => {
     try {
         const zoddedData = registerSchema.parse(req.body)
         const user = await authService.register(zoddedData)
-        res.status(201).json({
-            user: {
-                email: user.email,
-                username: user.username,
-                name: user.name,
-                phone: user.phone,
-                role: user.role
-            }
-        })
+
+        if (!user) {
+            throw new BadRequestError('User creation failed')
+        }
+
+        const safeUser = {
+        email: user.email,
+        username: user.username,
+        name: user.name,
+        phone: user.phone
+        }
+        res.status(201).json({ user: safeUser })
     } catch (err) {
+        console.log(err.constructor.name)
+        if (err.constructor.name === 'ZodError') {
+            const message = err.message || 'Invalid input data'
+            const error = new BadRequestError(message)
+            return next(error)     
+        }
         next(err)
     }
 }

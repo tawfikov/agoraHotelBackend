@@ -7,10 +7,10 @@ export class AppError extends Error {
 }
 
 export class BadRequestError extends AppError {
-    constructor(message)
- {
-    super(message, 400) 
- }}
+    constructor(message) {
+        super(message, 400) 
+    }
+}
 
 export class AuthenticationError extends AppError {
     constructor(message = 'Invalid credentials') {

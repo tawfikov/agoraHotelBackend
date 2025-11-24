@@ -15,14 +15,14 @@ const register = async (userDto) => {
 
     const hash = await hashPassword(userDto.password)
     const user = await createUser({...userDto, hashedPassword: hash })
-    return {user: {
+    return {
         id: user.id,
         email: user.email,
         username: user.username,
         name: user.name,
         phone: user.phone,
         role: user.role
-    }}
+    }
 }
 
 const login = async ({ username, email, password }) => {

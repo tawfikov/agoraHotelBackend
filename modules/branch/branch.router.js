@@ -7,6 +7,7 @@ const router = express.Router()
 router.get('/', controller.getAll)
 router.get('/:id', controller.getById)
 router.post('/create', protect, adminOnly, controller.createNew)
-//router.delete('/:id', protect, adminOnly, controller.deleteBranch)
+router.delete('/:id', protect, adminOnly, controller.deleteBranch)
+router.put('/:id', protect, adminOnly, controller.updateBranch)
 
 export default router

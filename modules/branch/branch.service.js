@@ -3,7 +3,7 @@ import { ConflictError, NotFoundError } from '../../utils/AppError.js'
 
 const normalizeImgUrls = (imgUrls) => {
     if (!imgUrls) return undefined
-    return Array.isArray(imgUrls) ? imgUrls : [imgUrls] //ensures imgUrls to be alwaya an array
+    return Array.isArray(imgUrls) ? imgUrls : [imgUrls]
 }
 
 export const getBranches = async () => {
@@ -31,7 +31,7 @@ export const createBranch = async (branchDto) => {
 
 export const deleteBranch = async (id) => {
     const branch = await branchRepo.getBranchById(id)
-    if(!branch) {
+    if (!branch) {
         throw new NotFoundError('Branch not found!')
     }
     await branchRepo.deleteBranch(id)

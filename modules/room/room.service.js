@@ -1,0 +1,93 @@
+import * as roomRepo from './room.repo.js'
+import { NotFoundError, ConflictError } from '../../utils/AppError.js'
+
+const normalizeImgUrls = (imgUrls) => {
+    if (!imgUrls) return undefined
+    return Array.isArray(imgUrls) ? imgUrls : [imgUrls]
+}
+
+const normalizedAmenities = (amenities) => {
+    if (!amenities) return undefined
+    return Array.isArray(amenities) ? amenities : [amenities]
+}
+
+export const createRoom = async (roomData) => {
+    const newRoom = await roomRepo.createRoom(roomData)
+    return newRoom
+}
+
+export const createRoomType = async(roomTypeDto) => {
+    const normalized = normalizeImgUrls(roomTypeDto.imgUrls)
+    if (normalized) {
+        roomTypeDto.imgUrls = normalized
+    }
+
+    const amenities = normalizedAmenities(roomTypeDto.amenities)
+    if (amenities) {
+        roomTypeDto.amenities = amenities
+    }
+    const newRoomType = await roomRepo.createRoomType(roomTypeDto)
+    return newRoomType
+}
+
+export const updateRoom = async (id, roomDto) => {
+    const room = await roomRepo.getRoomById(id)
+    if (!room) {
+        throw new NotFoundError('Room not found!')
+    }
+    if (roomDto.number && roomDto.number !== room.number) {
+        const existingRoom = await roomRepo.getRoomByNumber(room.branchId, roomDto.number)
+        if (existingRoom && existingRoom.id !== id) {
+            throw new ConflictError('Room with same number already exists in this branch.')
+        }
+    }
+    const updatedRoom = await roomRepo.updateRoom(id, roomDto)
+    return updatedRoom
+}
+
+export const updateRoomType = async (id, roomTypeDto) => {
+    const roomType = await roomRepo.getRoomTypeById(id)
+    if (!roomType) {
+        throw new NotFoundError('Room type not found!')
+    }
+    if (roomTypeDto.name && roomTypeDto.name !== roomType.name) {
+        const existingRoomType = await roomRepo.getRoomTypeByName(roomTypeDto.name)
+        if (existingRoomType && existingRoomType.id !== id) {
+            throw new ConflictError('Room type with same name already exists.')
+        }
+    }
+
+    const normalized = normalizeImgUrls(roomTypeDto.imgUrls)
+    if (normalized && normalized.length > 0) {
+        roomTypeDto.imgUrls = {
+            push: normalized
+        }
+    }
+    const amenities = normalizedAmenities(roomTypeDto.amenities)
+    if (amenities) {
+        roomTypeDto.amenities = {
+            push: amenities
+        }
+    }
+
+    const updatedRoomType = await roomRepo.updateRoomType(id, roomTypeDto)
+    return updatedRoomType
+}
+
+export const deleteRoom = async (id) => {
+    const room = await roomRepo.getRoomById(id)
+    if (!room) {
+        throw new NotFoundError('Room not found!')
+    }
+    await roomRepo.deleteRoom(id)
+    return { message: `Room ${room.number} has been deleted successfully` }
+}
+
+export const deleteRoomType = async (id) => {
+    const roomType = await roomRepo.getRoomTypeById(id)
+    if (!roomType) {
+        throw new NotFoundError('Room type not found!')
+    }
+    await roomRepo.deleteRoomType(id)
+    return { message: `Room type ${roomType.name} has been deleted successfully` }
+}

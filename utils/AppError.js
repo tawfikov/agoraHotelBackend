@@ -24,25 +24,6 @@ export class NotFoundError extends AppError {
     }
 }
 
-export class TokenInvalidError extends AppError {
-    constructor(message) {
-        super(message, 401)
-    }
-}
-
-
-export class TokenExpiredError extends AppError {
-  constructor(message) {
-    super(message, 401)
-    }
-}
-
-export class TokenMismatchError extends AppError {
-  constructor(message) {
-    super(message, 401)
-    }
-}
-
 export class ForbiddenError extends AppError {
     constructor(message) {
         super(message, 403)

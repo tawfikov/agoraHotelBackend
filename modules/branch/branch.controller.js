@@ -13,13 +13,12 @@ export const getAll = async (req, res, next) => {
 
 export const getById = async (req, res, next) => {
     const id = Number(req.params.id)
-    console.log(typeof id)
     try {
         const branch = await branchService.getBranch(id)
         if (!branch) {
             throw new NotFoundError('Branch not found')
         }
-        res.status(200). json({ branch })
+        res.status(200).json({ branch })
     } catch (err) {
         next(err)
     }
@@ -38,8 +37,8 @@ export const createNew = async (req, res, next) => {
 export const deleteBranch = async (req, res, next) => {
     const id = Number(req.params.id)
     try {
-        const deleteBranch = await branchService.deleteBranch(id)
-        res.status(204).json({ deleteBranch })
+        await branchService.deleteBranch(id)
+        res.status(204).send()
     } catch (err) {
         next(err)
     }

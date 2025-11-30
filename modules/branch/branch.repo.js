@@ -13,7 +13,7 @@ export const getAllBranches = async () => {
     return prisma.branch.findMany()
 }
 
-export const getBranchByname = async (name) => {
+export const getBranchByName = async (name) => {
     return prisma.branch.findUnique({
         where: { name }
     })

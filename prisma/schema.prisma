@@ -14,57 +14,85 @@ datasource db {
 }
 
 model RefreshToken {
-  id         Int      @id @default(autoincrement())
-  token      String   @unique
-  userId     Int
-  createdAt  DateTime @default(now())
-  expiresAt  DateTime
-  revoked    Boolean  @default(false)
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
 
   user User @relation(fields: [userId], references: [id])
 }
 
-
 model User {
-  id             Int       @id @default(autoincrement())
-  email          String    @unique
-  username       String    @unique
+  id             Int            @id @default(autoincrement())
+  email          String         @unique
+  username       String         @unique
   hashedPassword String
   name           String
   bookings       Booking[]
   phone          String?
   refreshTokens  RefreshToken[]
-  role           Role      @default(USER)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  role           Role           @default(USER)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 }
 
 model Branch {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique
-  location    String
-  description String?
-  imgUrls     String[] @default([])
-  rooms       Room[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              Int              @id @default(autoincrement())
+  name            String           @unique
+  location        String
+  description     String?
+  imgUrls         String[]         @default([])
+  rooms           Room[]
+  branchRoomTypes BranchRoomType[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
 
 model Room {
-  id         Int       @id @default(autoincrement())
+  id         Int        @id @default(autoincrement())
   number     String
   branchId   Int
-  type       String
-  capacity   Int
-  Roomstatus RoomStatus @default(AVAILABLE)
-  price      Float
+  roomTypeId Int
+  roomStatus RoomStatus @default(AVAILABLE)
   bookings   Booking[]
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 
-  branch     Branch @relation(fields: [branchId], references: [id])
+  roomType RoomType @relation(fields: [roomTypeId], references: [id], onDelete: Restrict)
+  branch   Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
   @@unique([branchId, number])
+}
+
+model RoomType {
+  id              Int              @id @default(autoincrement())
+  name            String           @unique
+  capacity        Int
+  imgUrls         String[]         @default([])
+  amenities       String[]         @default([])
+  description     String?
+  price           Float // Base price, editable for each room type in specific branch
+  rooms           Room[]
+  branchRoomTypes BranchRoomType[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model BranchRoomType {
+  id         Int      @id @default(autoincrement())
+  branchId   Int
+  roomTypeId Int
+  quantity   Int
+  price      Float // Branch-specific price (overrides RoomType  price)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  branch   Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  roomType RoomType @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, roomTypeId])
 }
 
 model Booking {

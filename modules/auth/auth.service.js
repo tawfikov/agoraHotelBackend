@@ -1,7 +1,7 @@
 import { createUser, revokeRefreshToken, saveRefreshToken, findUserByIdentifier, findUserByUsername, findRefreshToken, findUserByEmail } from './auth.repo.js'
 import { hashPassword, comparePassword} from '../../utils/hash.js'
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../../utils/jwt.js'
-import { TokenInvalidError, TokenExpiredError, TokenMismatchError, AuthenticationError, BadRequestError } from '../../utils/AppError.js'
+import { AuthenticationError, BadRequestError } from '../../utils/AppError.js'
 
 const register = async (userDto) => {
     const emailExist = await findUserByEmail(userDto.email)
@@ -55,14 +55,14 @@ const refresh = async (refreshToken) => {
     try {
         payload = verifyRefreshToken(refreshToken) //valid jwt token
     } catch (err) {
-        throw new TokenInvalidError('Invalid refresh token')
+        throw new AuthenticationError('Invalid refresh token')
     }
     const storedToken = await findRefreshToken(refreshToken) //check validity in db
     if (!storedToken || storedToken.revoked) {
-        throw new TokenExpiredError('Expired refresh token')
+        throw new AuthenticationError('Expired refresh token')
     }
     if (payload.sub !== storedToken.userId) {
-        throw new TokenMismatchError('Token mismatch')
+        throw new AuthenticationError('Token mismatch')
     }
 
     const userId = storedToken.userId;

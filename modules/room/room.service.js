@@ -93,11 +93,18 @@ export const deleteRoomType = async (id) => {
 }
 
 export const getAllRoomTypesByBranchId = async (branchId) => {
+    const branch = await roomRepo.getBranchById(branchId)
+    if (!branch) {
+        throw new NotFoundError('Branch not found!')
+    }
     const roomTypes = await roomRepo.findAllRoomTypesByBranchId(branchId)
     return roomTypes
 }
 
 export const getRoomType = async (branchId, roomTypeId) => {
-    const roomType = await roomRepo.getRoomTypeByIdAndBranchId(branchId, roomTypeId)
-    return roomType
+    const branchRoomType = await roomRepo.findRoomTypeByIdAndBranchId(branchId, roomTypeId)
+    if (!branchRoomType) {
+        throw new NotFoundError('Room type not found for this branch!')
+    }
+    return branchRoomType
 }

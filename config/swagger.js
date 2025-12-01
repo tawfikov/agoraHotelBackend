@@ -20,12 +20,9 @@ const options = {
           bearerFormat: "JWT"
         }
       }
-    },
-    security: [
-      { bearerAuth: [] }
-    ]
+    }
   },
-  apis: ['../modules/**/*.js']
+  apis: ['./modules/**/*.router.js', './modules/**/*.js']
 };
 
 export const swaggerSpec = swaggerJsdoc(options);

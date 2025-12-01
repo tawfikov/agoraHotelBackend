@@ -84,8 +84,7 @@ model BranchRoomType {
   id         Int      @id @default(autoincrement())
   branchId   Int
   roomTypeId Int
-  quantity   Int
-  price      Float // Branch-specific price (overrides RoomType  price)
+  price      Float? // Branch-specific price (overrides RoomType  price)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 

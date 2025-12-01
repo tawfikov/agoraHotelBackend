@@ -98,3 +98,9 @@ export const findRoomTypeByIdAndBranchId = async (branchId, roomTypeId) => {
         }
     })
 }
+
+export const getBranchById = async (id) => {
+    return await prisma.branch.findUnique({
+        where: { id }
+    })
+}

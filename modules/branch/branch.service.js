@@ -17,7 +17,7 @@ export const getBranch = async (id) => {
 }
 
 export const createBranch = async (branchDto) => {
-    const exists = await branchRepo.getBranchByname(branchDto.name)
+    const exists = await branchRepo.getBranchByName(branchDto.name)
     if (exists) {
         throw new ConflictError('Branch with same name already exists.')
     }

@@ -10,5 +10,8 @@ router.put('/:id', protect, adminOnly, controller.updateRoom)
 router.put('/type/:id', protect, adminOnly, controller.updateRoomType)
 router.delete('/:id', protect, adminOnly, controller.deleteRoom)
 router.delete('/type/:id', protect, adminOnly, controller.deleteRoomType)
+router.get('/types/:branchId', controller.getAllRoomTypes)
+router.get('/types/:branchId/:roomTypeId', controller.getRoomType)
+
 
 export default router

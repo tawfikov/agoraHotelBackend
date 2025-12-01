@@ -63,3 +63,24 @@ export const deleteRoomType = async (req, res, next) => {
         next(err)
     }
 }
+
+export const getAllRoomTypes = async (req, res, next) => {
+    const branchId = Number(req.params.branchId)
+    try {
+        const roomTypes = await roomService.getAllRoomTypesByBranchId(branchId)
+        res.status(200).json({ roomTypes })
+    } catch (err) {
+        next(err)
+    }
+}
+
+export const getRoomType = async (req, res, next) => {
+    const branchId = Number(req.params.branchId)
+    const roomTypeId = Number(req.params.roomTypeId)
+    try {
+        const roomType = await roomService.getRoomType(branchId, roomTypeId)
+        res.status(200).json({ roomType })
+    } catch(err) {
+        next(err)
+    }
+}

@@ -69,3 +69,32 @@ export const deleteRoomType = async (id) => {
         where: { id }
     })
 }
+
+export const findAllRoomTypesByBranchId = async (branchId) => {
+    return await prisma.branchRoomType.findMany({
+        where: { branchId},
+        include: {
+            roomType: true,
+            branch: {
+                select: { name: true, location: true }
+            }
+        }
+    })
+}
+
+export const findRoomTypeByIdAndBranchId = async (branchId, roomTypeId) => {
+    return await prisma.branchRoomType.findUnique({
+        where: {
+            branchId_roomTypeId: {
+                branchId,
+                roomTypeId
+            }
+        },
+        include: {
+            roomType: true,
+            branch: {
+                select: { name: true, location: true }
+            }
+        }
+    })
+}

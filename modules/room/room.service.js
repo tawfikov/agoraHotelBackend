@@ -91,3 +91,13 @@ export const deleteRoomType = async (id) => {
     await roomRepo.deleteRoomType(id)
     return { message: `Room type ${roomType.name} has been deleted successfully` }
 }
+
+export const getAllRoomTypesByBranchId = async (branchId) => {
+    const roomTypes = await roomRepo.findAllRoomTypesByBranchId(branchId)
+    return roomTypes
+}
+
+export const getRoomType = async (branchId, roomTypeId) => {
+    const roomType = await roomRepo.getRoomTypeByIdAndBranchId(branchId, roomTypeId)
+    return roomType
+}

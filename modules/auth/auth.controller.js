@@ -48,7 +48,7 @@ const login = async (req, res, next) => {
 
 const refresh = async (req, res, next) => {
     try {
-        const token= req.cookies.refreshToken
+        const token = req.cookies.refreshToken
         const result = await authService.refresh(token)
         res.cookie("refreshToken", result.refreshToken, {
             httpOnly: true,
@@ -64,7 +64,7 @@ const refresh = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
     try {
-        const token= req.cookies.refreshToken
+        const token = req.cookies.refreshToken
         await authService.logout(token)
         res.clearCookie("refreshToken")
         res.status(204).send()

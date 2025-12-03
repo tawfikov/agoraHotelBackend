@@ -22,8 +22,12 @@ export const protect = (req, res, next) => {
 }
 
 export const adminOnly = (req, res, next) => {
+    if (!req.user) {
+        throw new AuthenticationError('Authentication required.')
+    }
+
     if (req.user.role !== 'ADMIN') {
         throw new ForbiddenError('Admin access required.')
-    }
     next()
+    }
 }

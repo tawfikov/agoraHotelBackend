@@ -1,5 +1,9 @@
 import * as roomRepo from './room.repo.js'
 import { NotFoundError, ConflictError } from '../../utils/AppError.js'
+import pkg from '@prisma/client'
+const { PrismaClient } = pkg
+
+const prisma = new PrismaClient()
 
 const normalizeImgUrls = (imgUrls) => {
     if (!imgUrls) return undefined
@@ -11,9 +15,39 @@ const normalizedAmenities = (amenities) => {
     return Array.isArray(amenities) ? amenities : [amenities]
 }
 
-export const createRoom = async (roomData) => {
-    const newRoom = await roomRepo.createRoom(roomData)
-    return newRoom
+export const createRoom = async (roomDto) => {
+    const exists = await roomRepo.getRoomByNumber(roomDto.branchId, roomDto.number)
+    if (exists) {
+        throw new ConflictError('Room with same number already exists in this branch.')
+    }
+    
+    const { branchId, roomTypeId } = roomDto
+    
+    // Room creation bundled with assigning room type to branch if not existing
+    return await prisma.$transaction(async (tx) => {
+        // Check if branch_roomType already exists
+        const branchRoomTypeExists = await tx.branchRoomType.findUnique({
+            where: {
+                branchId_roomTypeId: {
+                    branchId,
+                    roomTypeId
+                }
+            }
+        })
+        //create if not exists
+        if (!branchRoomTypeExists) {
+            await tx.branchRoomType.create({ //inside transaction can't use roomRepo
+                data: {
+                    branchId,
+                    roomTypeId
+                }
+            })
+        }
+        const newRoom = await tx.room.create({ //finally create room
+            data: roomDto
+        })
+        return newRoom
+    })
 }
 
 export const createRoomType = async(roomTypeDto) => {

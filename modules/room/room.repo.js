@@ -14,6 +14,24 @@ export const createRoomType = async (roomTypeData) => {
         data: roomTypeData
     })
 }
+export const createBranchRoomType = async (branchRoomTypeData) => {
+    return await prisma.branchRoomType.create({
+        data: branchRoomTypeData
+    })
+}
+
+export const findBranchRoomType = async (branchId, roomTypeId) => {
+  return await prisma.branchRoomType.findUnique({
+    where: { branchId_roomTypeId: { branchId, roomTypeId } }
+  })
+}
+
+export const updateBranchRoomType = async (branchId, roomTypeId, updatedData) => {
+    return await prisma.branchRoomType.update({ //to customize prices per branch when needed
+        where: { branchId_roomTypeId: { branchId, roomTypeId } },
+        data: { ...updatedData }
+    })
+}
 
 export const getRoomById = async (id) => {
     return await prisma.room.findUnique({
@@ -72,7 +90,7 @@ export const deleteRoomType = async (id) => {
 
 export const findAllRoomTypesByBranchId = async (branchId) => {
     return await prisma.branchRoomType.findMany({
-        where: { branchId},
+        where: { branchId },
         include: {
             roomType: true,
             branch: {

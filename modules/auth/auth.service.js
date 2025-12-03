@@ -1,4 +1,4 @@
-import { createUser, revokeRefreshToken, saveRefreshToken, findUserByIdentifier, findUserByUsername, findRefreshToken, findUserByEmail } from './auth.repo.js'
+import { createUser, revokeRefreshToken, saveRefreshToken, findUserByIdentifier, findUserByUsername, findRefreshToken, findUserByEmail, findUserById } from './auth.repo.js'
 import { hashPassword, comparePassword} from '../../utils/hash.js'
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../../utils/jwt.js'
 import { AuthenticationError, BadRequestError } from '../../utils/AppError.js'
@@ -65,8 +65,13 @@ const refresh = async (refreshToken) => {
         throw new AuthenticationError('Token mismatch')
     }
 
-    const userId = storedToken.userId;
-    const newAccess = generateAccessToken({ sub: userId })
+    const userId = storedToken.userId
+    const user = await findUserById(userId)
+    if (!user) {
+        throw new AuthenticationError('User not found')
+    }
+
+    const newAccess = generateAccessToken({ sub: userId, role: user.role })
     const newRefresh = generateRefreshToken({ sub: userId }) //refresh token rotation
 
     await revokeRefreshToken(refreshToken)

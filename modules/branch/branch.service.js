@@ -45,7 +45,7 @@ export const updateBranch = async (id, branchDto) => {
     }
 
     if (branchDto.name && branchDto.name !== branch.name) { //re-check name duplication if changed
-        const exists = await branchRepo.getBranchByname(branchDto.name)
+        const exists = await branchRepo.getBranchByName(branchDto.name)
         if (exists && exists.id !== id) {
             throw new ConflictError('Branch with same name already exists.')
         }

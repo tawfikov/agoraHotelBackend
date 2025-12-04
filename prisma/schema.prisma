@@ -98,6 +98,8 @@ model Booking {
   id         Int      @id @default(autoincrement())
   userId     Int
   roomId     Int
+  branchId   Int
+  roomTypeId Int
   checkIn    DateTime
   checkOut   DateTime
   totalPrice Float
@@ -118,7 +120,7 @@ model Payment {
   method    String
   createdAt DateTime      @default(now())
 
-  booking Booking @relation(fields: [bookingId], references: [id])
+  booking   Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 }
 
 enum PaymentStatus {

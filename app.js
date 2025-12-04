@@ -6,6 +6,7 @@ import { swaggerDocs } from './config/swagger.js'
 import authRouter from './modules/auth/auth.router.js'
 import branchRouter from './modules/branch/branch.router.js'
 import roomRouter from './modules/room/room.router.js'
+import bookingRouter from './modules/booking/booking.router.js'
 import errorHandler from './middleware/error.middleware.js'
 
 dotenv.config()
@@ -20,6 +21,7 @@ swaggerDocs(app)
 app.use('/api/auth', authRouter)
 app.use('/api/branches', branchRouter)
 app.use('/api/rooms', roomRouter)
+app.use('/api/booking', bookingRouter)
 
 app.use(errorHandler)
 

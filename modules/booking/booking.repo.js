@@ -51,3 +51,10 @@ export const findBranchRoomType = async (branchId, roomTypeId) => {
         }
     })
 }
+
+export const updateBookingStatus = async (bookingId, status) => {
+  return await prisma.booking.update({
+    where: { id: bookingId },
+    data: { status }
+  })
+}

@@ -15,3 +15,19 @@ export const createPayment = async (paymentData) => {
     data: paymentData
   })
 }
+
+export const findBookingDetails = async (bookingId) => {
+  return await prisma.booking.findUnique({
+    where: { id: bookingId},
+    include: {
+      room: {
+        include: {
+          roomType: true,
+          branch: true
+        }
+      },
+      user: true
+    }
+
+})
+}

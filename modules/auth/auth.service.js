@@ -79,7 +79,15 @@ const refresh = async (refreshToken) => {
 
     return {
         accessToken: newAccess,
-        refreshToken: newRefresh
+        refreshToken: newRefresh,
+        user: {
+            id: user.id,
+            email: user.email,
+            username: user.username,
+            role: user.role,
+            name: user.name,
+            phone: user.phone
+        }
     }
 }
 

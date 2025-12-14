@@ -56,7 +56,7 @@ const refresh = async (req, res, next) => {
             sameSite: 'Strict',
             maxAge: 30 * 24 * 60 * 60 * 1000
         })
-        res.status(200).json({ accessToken: result.accessToken })
+        res.status(200).json({ accessToken: result.accessToken, user: result.user })
     } catch (err) {
         next(err)
     }
@@ -73,7 +73,6 @@ const logout = async (req, res, next) => {
     }
 }
 
-const controller = { register, login, refresh, logout }
 export default {
     register,
     login,

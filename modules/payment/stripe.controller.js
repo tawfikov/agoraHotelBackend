@@ -1,4 +1,5 @@
 // This is your test secret API key.
+//stripe session linked with booking in payment.service.js
 import * as paymentRepo from './stripe.repo.js'
 import { BadRequestError, NotFoundError } from '../../utils/AppError.js'
 import Stripe from 'stripe'

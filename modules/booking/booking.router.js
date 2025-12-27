@@ -99,5 +99,11 @@ const router = express.Router()
  *         description: No available rooms for the selected branch and room type, or branch/type not found
  */
 router.post('/', protect, controller.createBooking)
+router.post('/checkout', protect, controller.createBookingWithCheckout)
+
+router.post('/search', controller.searchRoomTypes)
+router.post("/quote", controller.pricingRoomType)
+router.get('/history', protect, controller.getBookings)
+
 
 export default router

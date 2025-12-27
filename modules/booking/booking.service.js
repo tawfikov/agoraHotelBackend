@@ -16,6 +16,7 @@ export const createBooking = async (bookingDto) => {
     }
     //find all rooms in with required type and branch
     const candidateRooms = await bookingRepo.findRoomsToBook(branchId, roomTypeId)
+    console.log(candidateRooms)
     if (!candidateRooms.length) {
         throw new NotFoundError('No rooms available right now. Please choose another room type.')
     }
@@ -44,4 +45,62 @@ export const createBooking = async (bookingDto) => {
         totalPrice
     })
     return booking
+}
+
+export const searchRoomTypes = async (searchDto) => {
+    const search = await bookingRepo.searchRoomTypes(searchDto.guests, searchDto.branchId)
+    return search
+}
+
+export const pricingRoomType = async (pricingDto) => {
+  const { branchId, roomTypeId } = pricingDto
+
+  const checkIn = new Date(pricingDto.checkIn)
+  const checkOut = new Date(pricingDto.checkOut)
+
+  const now = new Date()
+  if (checkIn < now) {
+    throw new BadRequestError("Check-in date must be in the future")
+  }
+  if (checkOut <= checkIn) {
+    throw new BadRequestError("Check-out date must be after check-in date")
+  }
+
+  return calculateBookingPrice({
+    branchId,
+    roomTypeId,
+    checkIn,
+    checkOut,
+    bookingRepo,
+  })
+}
+
+export const calculateBookingPrice = async ({
+  branchId,
+  roomTypeId,
+  checkIn,
+  checkOut
+}) => {
+  const nights = Math.ceil(
+    (checkOut - checkIn) / (1000 * 60 * 60 * 24)
+  )
+
+  const type = await bookingRepo.findRoomTypeById(roomTypeId)
+  const branchType = await bookingRepo.findBranchRoomType(branchId, roomTypeId)
+
+  if (!type) {
+    throw new NotFoundError("Room type not found")
+  }
+
+  const pricePerNight = Math.max(type.price, branchType?.price ?? 0)
+
+  return {
+    nights,
+    pricePerNight,
+    totalPrice: pricePerNight * nights,
+  }
+}
+
+export const getBookingHistory = async (userId) => {
+  return bookingRepo.getBookingsByUserId(userId)
 }

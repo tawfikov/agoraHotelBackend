@@ -58,3 +58,57 @@ export const updateBookingStatus = async (bookingId, status) => {
     data: { status }
   })
 }
+
+export const searchRoomTypes = async(guests, branchId) => {
+    return await prisma.roomType.findMany({
+        where: {
+            capacity: { gte: guests },
+            branchRoomTypes: {
+            some: { branchId },
+            },
+            rooms: {
+                some: {
+                    branchId
+                }
+            }
+        },
+        select: {
+            id: true,
+            name: true,
+            capacity: true,
+            price: true,
+            amenities: true,
+            imgUrls: true,
+            description: true,
+        },
+    })
+}
+
+export const getBookingsByUserId = async (userId) => {
+  return prisma.booking.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+    select: {
+        id: true,
+        branchId: true,
+        roomTypeId: true,
+        roomId: true,
+        checkIn: true,
+        checkOut: true,
+        totalPrice: true,
+        status: true,
+        createdAt: true,
+        room: {
+            select: {
+                number: true,
+                roomType: {
+                    select: { id: true, name: true, capacity: true }
+                },
+                branch: {
+                    select: { id: true, name: true, location: true }
+                }
+            }
+        }
+    }
+  })
+}

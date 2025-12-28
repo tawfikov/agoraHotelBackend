@@ -34,6 +34,14 @@ export const updateBranch = async (id, updatedData) => {
 
 export const deleteBranch = async (id) => {
     return await prisma.branch.delete({
-        where: { id}
+        where: { id }
+    })
+}
+
+export const getAllBranchImgs = async () => {
+    return await prisma.branch.findMany({
+        select: {
+            imgUrls: true
+        }
     })
 }

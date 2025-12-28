@@ -54,3 +54,12 @@ export const updateBranch = async (req, res, next) => {
         next(err)
     }
 }
+
+export const getAllImgs = async (req, res, next) => {
+    try {
+        const urlArray = await branchService.getAllImgs()
+        res.status(200).json({ urlArray })
+    } catch(err) {
+        next(err)
+    }
+}

@@ -87,7 +87,8 @@ const refresh = async (refreshToken) => {
             username: user.username,
             role: user.role,
             name: user.name,
-            phone: user.phone
+            phone: user.phone,
+            createdAt: user.createdAt
         }
     }
 }

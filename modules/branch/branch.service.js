@@ -61,3 +61,9 @@ export const updateBranch = async (id, branchDto) => {
     const updatedBranch = await branchRepo.updateBranch(id, branchDto)
     return updatedBranch
 }
+
+export const getAllImgs = async () => {
+    const imgs = await branchRepo.getAllBranchImgs()
+    const urlArray = imgs.flatMap((b) => b.imgUrls || [])
+    return urlArray
+}

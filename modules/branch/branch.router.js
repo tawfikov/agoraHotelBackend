@@ -11,6 +11,9 @@ import { protect, adminOnly } from '../../middleware/auth.middleware.js'
 
 const router = express.Router()
 
+router.get('/imgs', controller.getAllImgs)
+
+
 /**
  * @swagger
  * /api/branches:
@@ -282,5 +285,6 @@ router.delete('/:id', protect, adminOnly, controller.deleteBranch)
  *         description: Branch not found
  */
 router.put('/:id', protect, adminOnly, controller.updateBranch)
+
 
 export default router

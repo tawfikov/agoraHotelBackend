@@ -35,7 +35,7 @@ export const pricingRoomType = async (req, res, next) => {
   }
 }
 
-// Creates a booking and immediately issues a Stripe Checkout Session so the client can redirect.
+// Calls create booking and create checkout session after.
 export const createBookingWithCheckout = async (req, res, next) => {
   const zoddedBooking = createBookingSchema.parse(req.body)
   zoddedBooking.userId = req.user.sub

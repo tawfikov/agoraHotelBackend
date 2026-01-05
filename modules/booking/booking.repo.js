@@ -112,3 +112,68 @@ export const getBookingsByUserId = async (userId) => {
     }
   })
 }
+
+export const getTotalRevenue = async () => {
+  const result = await prisma.booking.aggregate({
+    _sum: { totalPrice: true },
+    where: { status: { not: 'CANCELLED' } },
+  })
+  return result._sum.totalPrice
+}
+
+export const getRevenueThisMonth = async () => {
+  const now = new Date()
+  const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1))
+  const startOfNextMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1))
+
+  const result = await prisma.booking.aggregate({
+    _sum: { totalPrice: true },
+    where: {
+      status: 'CONFIRMED',
+      createdAt: { gte: startOfMonth, lt: startOfNextMonth },
+    },
+  })
+  return result._sum.totalPrice
+}
+
+export const getTotalBookings = async () => {
+  return prisma.booking.count({
+    where: { status: 'CONFIRMED' },
+  })
+}
+
+export const getBookingsPerBranch = async () => {
+  return prisma.booking.groupBy({
+    by: ['branchId'],
+    _count: { _all: true },
+    where: { status: 'CONFIRMED' },
+  })
+}
+
+export const getRoomsPerBranch = async () => {
+  return prisma.room.groupBy({
+    by: ['branchId'],
+    _count: { id: true },
+    where: { roomStatus: { not: 'MAINTENANCE' } },
+  })
+}
+
+export const getActiveBookingsWithRooms = async () => {
+  const now = new Date()
+  return prisma.booking.findMany({
+    where: {
+      status: 'CONFIRMED' ,
+      checkIn: { lte: now },
+      checkOut: { gt: now },
+    },
+    select: { roomId: true, branchId: true },
+  })
+}
+
+export const getBranchesByIds = async (branchIds) => {
+  if (!branchIds.length) return []
+  return prisma.branch.findMany({
+    where: { id: { in: branchIds } },
+    select: { id: true, name: true, location: true },
+  })
+}

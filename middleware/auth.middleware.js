@@ -28,6 +28,6 @@ export const adminOnly = (req, res, next) => {
 
     if (req.user.role !== 'ADMIN') {
         throw new ForbiddenError('Admin access required.')
-    next()
     }
+    next()
 }

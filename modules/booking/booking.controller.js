@@ -59,3 +59,12 @@ export const getBookings = async (req, res, next) => {
     next(err)
   }
 }
+
+export const getMetrics = async (req, res, next) => {
+  try {
+    const metrics = await bookingService.getBookingMetrics()
+    res.status(200).json(metrics)
+  } catch (err) {
+    next(err)
+  }
+}

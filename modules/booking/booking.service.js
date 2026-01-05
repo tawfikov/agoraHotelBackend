@@ -104,3 +104,60 @@ export const calculateBookingPrice = async ({
 export const getBookingHistory = async (userId) => {
   return bookingRepo.getBookingsByUserId(userId)
 }
+
+export const getBookingMetrics = async () => {
+  const [
+    totalRevenue,
+    revenueThisMonth,
+    totalBookings,
+    bookingsPerBranchRaw,
+    roomsPerBranchRaw,
+    activeBookings,
+  ] = await Promise.all([
+    bookingRepo.getTotalRevenue(),
+    bookingRepo.getRevenueThisMonth(),
+    bookingRepo.getTotalBookings(),
+    bookingRepo.getBookingsPerBranch(),
+    bookingRepo.getRoomsPerBranch(),
+    bookingRepo.getActiveBookingsWithRooms(),
+  ])
+
+  const branchIds = bookingsPerBranchRaw.map(b => b.branchId)
+  const branches = await bookingRepo.getBranchesByIds(branchIds)
+  const branchLookup = new Map(branches.map(b => [b.id, b]))
+
+  const bookingsPerBranch = bookingsPerBranchRaw.map(({ branchId, _count }) => {
+    const branch = branchLookup.get(branchId)
+    return {
+      branchId,
+      branchName: branch?.name ?? null,
+      branchLocation: branch?.location ?? null,
+      bookings: _count._all,
+    }
+  })
+
+  const roomsByBranch = new Map(roomsPerBranchRaw.map(r => [r.branchId, r._count.id]))
+  const occupiedRoomsByBranch = new Map()
+  
+  for (const b of activeBookings) {
+    const set = occupiedRoomsByBranch.get(b.branchId) ?? new Set()
+    set.add(b.roomId)
+    occupiedRoomsByBranch.set(b.branchId, set)
+  }
+
+  const occupancyPerBranch = Array.from(roomsByBranch.entries()).map(([branchId, totalRooms]) => {
+    const occupied = occupiedRoomsByBranch.get(branchId)?.size ?? 0
+    const occupancyRate = totalRooms > 0 ? occupied / totalRooms : 0
+    return { branchId, occupiedRooms: occupied, totalRooms, occupancyRate }
+  })
+
+
+  return {
+    totalRevenue,
+    revenueThisMonth,
+    totalBookings,
+    bookingsPerBranch,
+    occupancyPerBranch,
+  }
+}
+

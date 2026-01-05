@@ -104,6 +104,8 @@ router.post('/checkout', protect, controller.createBookingWithCheckout)
 router.post('/search', controller.searchRoomTypes)
 router.post("/quote", controller.pricingRoomType)
 router.get('/history', protect, controller.getBookings)
+router.get('/metrics', protect, adminOnly, controller.getMetrics)
+
 
 
 export default router
